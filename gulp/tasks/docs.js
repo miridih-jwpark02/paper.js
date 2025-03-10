@@ -14,22 +14,26 @@ var gulp = require('gulp'),
     del = require('del'),
     rename = require('gulp-rename'),
     shell = require('gulp-shell'),
-    options = require('../utils/options.js'),
-    run = require('run-sequence');
+    options = require('../utils/options.js');
 
 var docOptions = {
     local: 'docs', // Generates the offline docs
     server: 'serverdocs' // Generates the website templates for the online docs
 };
 
-gulp.task('docs', ['build:full', 'docs:local', 'docs:typescript'], function() {
+// Gulp 4 문법으로 변경
+gulp.task('docs', gulp.series('build:full', 'docs:local', 'docs:typescript', function() {
     return gulp.src('dist/paper-full.js')
         .pipe(rename({ basename: 'paper' }))
         .pipe(gulp.dest('dist/docs/assets/js/'));
-});
+}));
 
 Object.keys(docOptions).forEach(function(name) {
-    gulp.task('docs:' + name, ['clean:docs:' + name], function() {
+    gulp.task('clean:docs:' + name, function() {
+        return del(['dist/' + docOptions[name] + '/**']);
+    });
+
+    gulp.task('docs:' + name, gulp.series('clean:docs:' + name, function() {
         var mode = docOptions[name];
         return gulp.src('src')
             .pipe(shell(
@@ -41,28 +45,15 @@ Object.keys(docOptions).forEach(function(name) {
                 ].join(''),
                 { cwd: 'gulp/jsdoc' })
             );
-    });
-
-    gulp.task('clean:docs:' + name, function() {
-        return del(['dist/' + docOptions[name] + '/**']);
-    });
+    }));
 });
 
 // The goal of the typescript task is to automatically generate a type
 // definition for the library.
-gulp.task('docs:typescript', ['build:full'], function(callback) {
-    run(
-        'docs:typescript:clean:before',
-        'docs:typescript:build',
-        'docs:typescript:clean:after',
-        callback
-    );
-});
-// First clean eventually existing type definition...
 gulp.task('docs:typescript:clean:before', function() {
     return del('dist/paper.d.ts');
 });
-// ...then build the definition...
+
 gulp.task('docs:typescript:build', function() {
     // First parse JSDoc comments and store parsed data in a temporary file...
     return gulp.src('src')
@@ -81,10 +72,12 @@ gulp.task('docs:typescript:build', function() {
         // ...finally test the definition by compiling a typescript file.
         .pipe(shell('node node_modules/typescript/bin/tsc --project gulp/typescript'));
 });
-// ...finally remove all unneeded temporary files that were used for building.
+
 gulp.task('docs:typescript:clean:after', function() {
     return del([
         'gulp/typescript/typescript-definition-data.json',
         'gulp/typescript/typescript-definition-test.js'
     ]);
 });
+
+gulp.task('docs:typescript', gulp.series('build:full', 'docs:typescript:clean:before', 'docs:typescript:build', 'docs:typescript:clean:after'));

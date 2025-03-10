@@ -4,8 +4,47 @@
     <title>Paper.js Tests</title>
     <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
     <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
-    <script src="../dist/paper-full.js"></script>
     <script src="../node_modules/prepro/lib/browser.js"></script>
+    <script>
+        // Paper.js에서 사용하는 __options 객체 정의
+        window.__options = {
+            version: "0.13.0",
+            paperScript: true
+        };
+
+        // ChangeFlag 정의
+        window.ChangeFlag = {
+            APPEARANCE: 0x1,
+            CHILDREN: 0x2,
+            INSERTION: 0x4,
+            GEOMETRY: 0x8,
+            MATRIX: 0x10,
+            SEGMENTS: 0x20,
+            STROKE: 0x40,
+            STYLE: 0x80,
+            ATTRIBUTE: 0x100,
+            CONTENT: 0x200,
+            PIXELS: 0x400,
+            CLIPPING: 0x800,
+            VIEW: 0x1000
+        };
+
+        // Change 정의
+        window.Change = {
+            CHILDREN: window.ChangeFlag.CHILDREN | window.ChangeFlag.GEOMETRY | window.ChangeFlag.APPEARANCE,
+            INSERTION: window.ChangeFlag.INSERTION | window.ChangeFlag.APPEARANCE,
+            GEOMETRY: window.ChangeFlag.GEOMETRY | window.ChangeFlag.APPEARANCE,
+            MATRIX: window.ChangeFlag.MATRIX | window.ChangeFlag.GEOMETRY | window.ChangeFlag.APPEARANCE,
+            SEGMENTS: window.ChangeFlag.SEGMENTS | window.ChangeFlag.GEOMETRY | window.ChangeFlag.APPEARANCE,
+            STROKE: window.ChangeFlag.STROKE | window.ChangeFlag.STYLE | window.ChangeFlag.APPEARANCE,
+            STYLE: window.ChangeFlag.STYLE | window.ChangeFlag.APPEARANCE,
+            ATTRIBUTE: window.ChangeFlag.ATTRIBUTE | window.ChangeFlag.APPEARANCE,
+            CONTENT: window.ChangeFlag.CONTENT | window.ChangeFlag.GEOMETRY | window.ChangeFlag.APPEARANCE,
+            PIXELS: window.ChangeFlag.PIXELS | window.ChangeFlag.APPEARANCE,
+            VIEW: window.ChangeFlag.VIEW | window.ChangeFlag.APPEARANCE
+        };
+    </script>
+    <script src="../dist/paper-full.js"></script>
     <script src="load.js"></script>
 </head>
 <body>

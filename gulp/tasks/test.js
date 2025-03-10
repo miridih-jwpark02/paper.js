@@ -14,17 +14,18 @@ var gulp = require('gulp'),
     qunits = require('gulp-qunits'),
     webserver = require('gulp-webserver');
 
-gulp.task('test', ['test:phantom', 'test:node']);
+// Gulp 4 문법으로 변경
+gulp.task('test', gulp.parallel('test:phantom', 'test:node'));
 
-gulp.task('test:phantom', ['minify:acorn'], function() {
+gulp.task('test:phantom', gulp.series('minify:acorn', function() {
     return gulp.src('index.html', { cwd: 'test' })
         .pipe(qunits({
             checkGlobals: true,
             timeout: 40
         }));
-});
+}));
 
-gulp.task('test:node', ['minify:acorn'], function(callback) {
+gulp.task('test:node', gulp.series('minify:acorn', function() {
     return gulp.src('load.js', { cwd: 'test' })
         .pipe(qunits({
             require: [
@@ -38,12 +39,12 @@ gulp.task('test:node', ['minify:acorn'], function(callback) {
             ],
             timeout: 40
         }));
-});
+}));
 
-gulp.task('test:browser', ['minify:acorn'], function() {
-    gulp.src('.')
+gulp.task('test:browser', gulp.series('minify:acorn', function() {
+    return gulp.src('.')
         .pipe(webserver({
             open: '/test'
         }));
-});
+}));
 

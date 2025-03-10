@@ -132,7 +132,7 @@ build from c++ sources:
 
 In order to build Node-Canvas for use of `paper-jsdom-canvas` in Electron, which
 is likely to use a different version of V8 than the Node binary installed in
-your system, you need to manually specify the location of Electron’s headers.
+your system, you need to manually specify the location of Electron's headers.
 Follow these steps to do so:
 
 [Electron — Using Native Node
@@ -144,6 +144,44 @@ You should now be able to install the Paper.js module with jsdom and Canvas
 rendering from NPM:
 
     npm install paper-jsdom-canvas
+
+## Node.js 호환성 안내
+
+이 프로젝트는 Node.js 14 버전과 Node.js 20 이상 버전에서 모두 작동합니다.
+
+### Node.js 20+ 사용 방법
+
+Node.js 20 이상 버전에서는 다음 명령어로 빌드할 수 있습니다:
+
+```
+pnpm install
+pnpm build
+```
+
+이 방법은 Vite를 사용하여 빌드하므로 더 빠르고 현대적인 빌드 환경을 제공합니다. 또한 ES 모듈 형식의 출력도 생성합니다.
+
+또는 다음 명령어로 직접 빌드 스크립트를 사용할 수도 있습니다:
+
+```
+pnpm install
+pnpm build:direct
+```
+
+### Node.js 14 사용 방법 (기존 방식)
+
+여전히 Node.js 14 버전을 사용하고 싶다면 다음과 같이 할 수 있습니다:
+
+1. [nvm(Node Version Manager)](https://github.com/nvm-sh/nvm)을 설치하세요.
+2. 프로젝트 루트 디렉토리에서 다음 명령어를 실행하여 적절한 Node.js 버전을 설치하고 사용하세요:
+   ```
+   nvm install 14
+   nvm use 14
+   ```
+3. 그 후 빌드 명령어를 실행하세요:
+   ```
+   pnpm install
+   pnpm build:gulp
+   ```
 
 ## Development
 
@@ -369,3 +407,83 @@ For a list of authors and contributors, please see
 Distributed under the MIT license. See 
 [LICENSE](https://github.com/paperjs/paper.js/blob/master/LICENSE.txt)
 for details.
+
+## 개요
+
+Paper.js는 HTML5 Canvas 위에서 동작하는 벡터 그래픽 스크립팅 프레임워크입니다. 이 프로젝트는 [Scriptographer](http://scriptographer.org)의 핵심 아이디어를 기반으로 하며, 완전히 새롭게 설계되고 구현되었습니다.
+
+## 빌드 시스템
+
+Paper.js는 Vite를 사용하여 빌드됩니다. 다음 명령어를 사용하여 프로젝트를 빌드하고 개발할 수 있습니다.
+
+### 설치
+
+```bash
+pnpm install
+```
+
+### 빌드
+
+```bash
+pnpm build
+```
+
+이 명령어는 다음 파일들을 생성합니다:
+- `dist/paper-full.js`: PaperScript 기능을 포함한 전체 버전
+- `dist/paper-core.js`: PaperScript 기능을 제외한 코어 버전
+- `dist/paper-full.min.js`: 압축된 전체 버전
+- `dist/paper-core.min.js`: 압축된 코어 버전
+- `dist/paper-full.es.js`: ES 모듈 형식의 전체 버전
+- `dist/paper-core.es.js`: ES 모듈 형식의 코어 버전
+
+### 압축
+
+```bash
+pnpm minify
+```
+
+이 명령어는 빌드된 파일들을 압축합니다.
+
+### 배포 파일 생성
+
+```bash
+pnpm dist
+```
+
+이 명령어는 빌드, 압축, 문서 생성을 모두 수행하여 배포 파일을 생성합니다.
+
+### 개발 모드
+
+```bash
+pnpm load
+```
+
+이 명령어는 개발 모드에서 소스 파일을 직접 로드하기 위한 심볼릭 링크를 생성합니다.
+
+### 파일 변경 감시
+
+```bash
+pnpm watch
+```
+
+이 명령어는 소스 파일의 변경을 감시하고, 변경이 감지되면 자동으로 빌드를 실행합니다. 또한 개발 서버를 실행하여 예제를 확인할 수 있습니다.
+
+### 문서 생성
+
+```bash
+pnpm docs
+```
+
+이 명령어는 API 문서와 TypeScript 정의 파일을 생성합니다.
+
+## 라이선스
+
+Paper.js는 MIT 라이선스로 배포됩니다. 자세한 내용은 [LICENSE.txt](LICENSE.txt) 파일을 참조하세요.
+
+## 기여
+
+Paper.js에 기여하고 싶다면, [GitHub 저장소](https://github.com/paperjs/paper.js)에서 이슈를 제기하거나 풀 리퀘스트를 보내주세요.
+
+## 웹사이트
+
+Paper.js 웹사이트는 [http://paperjs.org](http://paperjs.org)에서 확인할 수 있습니다.

@@ -24,7 +24,7 @@ var uglifyOptions = {
     }
 };
 
-gulp.task('minify', ['build'], function() {
+gulp.task('minify', gulp.series('build', function() {
     return gulp.src([
             'dist/paper-full.js',
             'dist/paper-core.js'
@@ -34,7 +34,7 @@ gulp.task('minify', ['build'], function() {
             suffix: '.min'
         }))
         .pipe(gulp.dest('dist'));
-});
+}));
 
 gulp.task('minify:acorn', function() {
     // Only compress acorn if the compressed file doesn't exist yet.

@@ -15,9 +15,16 @@ var gulp = require('gulp'),
     merge = require('merge-stream'),
     zip = require('gulp-zip');
 
-gulp.task('dist', ['build', 'minify', 'docs']);
+// Gulp 4 문법으로 변경
+gulp.task('dist', gulp.series('build', 'minify', 'docs'));
 
-gulp.task('zip', ['clean:zip', 'dist'], function() {
+gulp.task('clean:zip', function() {
+    return del([
+        'dist/paperjs.zip'
+    ]);
+});
+
+gulp.task('zip', gulp.series('clean:zip', 'dist', function() {
     return merge(
             gulp.src([
                 'dist/paper-full*.js',
@@ -34,10 +41,4 @@ gulp.task('zip', ['clean:zip', 'dist'], function() {
         )
         .pipe(zip('paperjs.zip'))
         .pipe(gulp.dest('dist'));
-});
-
-gulp.task('clean:zip', function() {
-    return del([
-        'dist/paperjs.zip'
-    ]);
-});
+}));

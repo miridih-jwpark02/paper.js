@@ -27,18 +27,25 @@ var buildOptions = {
 
 var buildNames = Object.keys(buildOptions);
 
-gulp.task('build',
-    buildNames.map(function(name) {
-        return 'build:' + name;
-    }).concat(['build:copy'])
-);
+// Gulp 4 문법으로 변경
+var buildTasks = buildNames.map(function(name) {
+    return 'build:' + name;
+});
+
+gulp.task('build', gulp.series(gulp.parallel(buildTasks), 'build:copy'));
 
 gulp.task('build:copy', function() {
-    gulp.src(['src/node/*.js']).pipe(gulp.dest('dist/node'));
+    return gulp.src(['src/node/*.js']).pipe(gulp.dest('dist/node'));
 });
 
 buildNames.forEach(function(name) {
-    gulp.task('build:' + name, ['clean:build:' + name, 'minify:acorn'], function() {
+    gulp.task('clean:build:' + name, function() {
+        return del([
+            'dist/paper-' + name + '*.js'
+        ]);
+    });
+
+    gulp.task('build:' + name, gulp.series('clean:build:' + name, 'minify:acorn', function() {
         return gulp.src('src/paper.js')
             .pipe(prepro({
                 // Evaluate constants.js inside the precompilation scope before
@@ -65,11 +72,5 @@ buildNames.forEach(function(name) {
                 suffix: '-' + name
             }))
             .pipe(gulp.dest('dist'));
-    });
-
-    gulp.task('clean:build:' + name, function() {
-        return del([
-            'dist/paper-' + name + '*.js'
-        ]);
-    });
+    }));
 });
